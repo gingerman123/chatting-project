@@ -1,5 +1,6 @@
 #include "signIn.h"
 
+
 using namespace std;
 
 
@@ -15,12 +16,10 @@ string str_member[6] = { "아이디","비밀번호","이름","성별","생년월일","별명" };
 
 
 
+
+
+
 void create(sql::mysql::MySQL_Driver* driver, sql::Connection* con, sql::Statement* stmt) {
-	//// MySQL Connector/C++ 초기화
-	//sql::mysql::MySQL_Driver* driver; // 추후 해제하지 않아도 Connector/C++가 자동으로 해제해 줌
-	//sql::Connection* con;
-	//sql::Statement* stmt;
-	// 데이터베이스 쿼리 실행
 	stmt = con->createStatement();
 	stmt->execute("DROP TABLE IF EXISTS user"); // DROP
 	cout << "Finished dropping table (if existed)" << endl;
@@ -33,29 +32,7 @@ void create(sql::mysql::MySQL_Driver* driver, sql::Connection* con, sql::Stateme
 
 void signin(sql::mysql::MySQL_Driver* driver, sql::Connection* con, sql::Statement* stmt, sql::PreparedStatement* pstmt) {
 
-	//// MySQL Connector/C++ 초기화
-	//sql::mysql::MySQL_Driver* driver; // 추후 해제하지 않아도 Connector/C++가 자동으로 해제해 줌
-	//sql::Connection* con;
-	//sql::Statement* stmt;
-	//sql::PreparedStatement* pstmt;
 
-	//try {
-	//	driver = sql::mysql::get_mysql_driver_instance();
-	//	con = driver->connect(server, username, password);
-	//}
-	//catch (sql::SQLException& e) {
-	//	cout << "Could not connect to server. Error message: " << e.what() << endl;
-	//	exit(1);
-	//}
-
-
-	//// 데이터베이스 선택
-	//con->setSchema("chat");
-
-	//// db 한글 저장을 위한 셋팅 
-	//stmt = con->createStatement();
-	//stmt->execute("set names euckr");
-	//if (stmt) { delete stmt; stmt = nullptr; }
 	pstmt = con->prepareStatement("INSERT INTO user(id,pw,name,gender,birthday,nickname) VALUES(?,?,?,?,?,?)"); // user 테이블 insert
 
 	for (int i = 0; i < 6; i++) {		//각 회원정보 입력 받기
@@ -123,11 +100,52 @@ void signin(sql::mysql::MySQL_Driver* driver, sql::Connection* con, sql::Stateme
 			}
 			//BIRTH
 			else if (i == 4) {
-				if (birth.substr(4,1) == "-" || birth.substr(7,1) == "-") {		//날짜 형식이 맞는지 체크
-					if (birth.substr(0,4) == "1") {}
-				
-				
+				//현재 날짜 받는 코드
+				auto now = std::chrono::system_clock::now();
+				auto now_time = std::chrono::system_clock::to_time_t(now);
+				std::tm now_tm;
+				localtime_s(&now_tm, &now_time);
+
+				int year = now_tm.tm_year + 1900;
+				int month = now_tm.tm_mon + 1;
+				int day = now_tm.tm_mday;
+
+				if (member[i].size() != 10) {	//10글자 맞는지 체크
+					continue;
 				}
+				//내가 입력한 년,월,일로 저장
+				string input_year = member[i].substr(0, 4);
+				string input_mon = member[i].substr(5, 2);
+				string input_day = member[i].substr(8, 2);
+				
+				string date = input_year + input_mon + input_day;	//string타입 ex)"20240125"
+				int now_date = 10000 * year + 100 * month + day;	//int타입 ex)20240125
+
+				bool isInRange1 = false;
+				bool isInRange2 = false;
+				bool isDate = false;
+				if (member[i].size() == 10) {		//10글자 맞는지 체크
+					if (member[i].substr(4, 1) == "-" && member[i].substr(7, 1) == "-") {		//날짜 형식이 맞는지 체크
+						isDate = true;
+						if (stoi(date) < now_date + 1) {	//현재 날짜보다 이후인지 체크
+							isInRange1 = true;
+						}
+
+						if (stoi(input_year)> 0) {		//0년 이상인지
+							if ( stoi(input_mon)> 0 && stoi(input_mon) < 13) {		//1~12월인지
+								if (stoi(input_day) > 0 && stoi(input_day) < 32) {		//1일~31일인지
+									isInRange2 = true;
+								}
+							}
+						
+						}
+					}
+				}
+
+				if (isInRange1 && isInRange2 && isDate) {
+					complete = true;
+				}
+				
 			}
 			//NICKNAME
 			else {
@@ -139,7 +157,6 @@ void signin(sql::mysql::MySQL_Driver* driver, sql::Connection* con, sql::Stateme
 					complete = true;
 				}
 			}
-			//i == 3 ? pstmt->setDateTime(i + 1, member[i]);
 		}
 
 		i == 4? pstmt->setDateTime(i+1,member[i]) : pstmt->setString(i + 1, member[i]);		//birth면 datetime으로 나머지는 string으로 입력
