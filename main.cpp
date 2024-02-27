@@ -37,6 +37,7 @@ int main()
 	pstmt = con->prepareStatement("INSERT INTO user(id,pw,name,gender,birthday,nickname) VALUES(?,?,?,?,?,?)"); // user Å×ÀÌ÷ם insert
 	signin(driver,con,stmt,pstmt);
 
+
 	return 0;
 
 }

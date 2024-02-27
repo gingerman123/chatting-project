@@ -61,12 +61,14 @@ void recreateThread() {
 //   
 //}
 
+sql::mysql::MySQL_Driver* driver; // 추후 해제하지 않아도 Connector/C++가 자동으로 해제해 줌
+sql::Connection* con;
+sql::Statement* stmt;
+sql::PreparedStatement* pstmt;
+
 
 int main() {
-    sql::mysql::MySQL_Driver* driver; // 추후 해제하지 않아도 Connector/C++가 자동으로 해제해 줌
-    sql::Connection* con;
-    sql::Statement* stmt;
-    sql::PreparedStatement* pstmt;
+
 
     try {
         driver = sql::mysql::get_mysql_driver_instance();
@@ -85,12 +87,10 @@ int main() {
     stmt->execute("set names euckr");
     if (stmt) { delete stmt; stmt = nullptr; }
 
-    create(driver, con, stmt);
-    pstmt = con->prepareStatement("INSERT INTO user(id,pw,name,gender,birthday,nickname) VALUES(?,?,?,?,?,?)"); // user 테이블 insert
- 
+    //create(driver, con, stmt);
+    create_t(driver, con, stmt);
+
     
-
-
     WSADATA wsa;
 
     // Winsock를 초기화하는 함수. MAKEWORD(2, 2)는 Winsock의 2.2 버전을 사용하겠다는 의미.
@@ -180,10 +180,15 @@ void add_client(int ti) {
     new_client.ti = ti;
 
     recv(new_client.sck, buf, MAX_SIZE, 0);
-    string id = string(buf);
-
+    string id_1 = string(buf);
+    recv(new_client.sck, buf, MAX_SIZE, 0);
+    string pw_1 = string(buf);
     string msg = "[공지] " + new_client.user + " 님이 입장했습니다.";
     cout << msg << endl;
+    signin_t(driver, con, stmt, pstmt, id_1,pw_1);
+
+
+
 
     sck_list.push_back(new_client); // client 정보를 답는 sck_list 배열에 새로운 client 추가
 

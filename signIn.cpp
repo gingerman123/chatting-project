@@ -1,8 +1,6 @@
 #include "signIn.h"
 
 
-using namespace std;
-
 
 string id;
 string pw;
@@ -17,13 +15,29 @@ string str_member[6] = { "아이디","비밀번호","이름","성별","생년월일","별명" };
 
 void create(sql::mysql::MySQL_Driver* driver, sql::Connection* con, sql::Statement* stmt) {
 	stmt = con->createStatement();
-	stmt->execute("DROP TABLE IF EXISTS user"); // DROP
+	stmt->execute("DROP TABLE IF EXISTS id"); // DROP
 	cout << "Finished dropping table (if existed)" << endl;
-	stmt->execute("CREATE TABLE user(id VARCHAR(15) NOT NULL PRIMARY KEY,pw VARCHAR(15) NOT NULL,name VARCHAR(15) NOT NULL,gender VARCHAR(1),birthday DATE NOT NULL,nickname VARCHAR(20) NOT NULL);");// CREATE
+	stmt->execute("CREATE TABLE id(id VARCHAR(15) NOT NULL PRIMARY KEY,pw VARCHAR(15) NOT NULL);");// CREATE
+	cout << "Finished creating table" << endl;
+	delete stmt;
+}	
+
+void signin_t(sql::mysql::MySQL_Driver* driver, sql::Connection* con, sql::Statement* stmt, sql::PreparedStatement* pstmt,std::string id_1,std::string pw_1) {
+	pstmt = con->prepareStatement("INSERT INTO id(id,pw) VALUES(?,?)"); // id 테이블 insert
+	pstmt->setString(1,id_1);
+	pstmt->setString(2,pw_1);
+	pstmt->execute();
+}
+void create_t(sql::mysql::MySQL_Driver* driver, sql::Connection* con, sql::Statement* stmt) {
+	stmt = con->createStatement();
+	stmt->execute("DROP TABLE IF EXISTS id"); // DROP
+	cout << "Finished dropping table (if existed)" << endl;
+	stmt->execute("CREATE TABLE id(id VARCHAR(15) NOT NULL PRIMARY KEY,pw VARCHAR(15) NOT NULL);");// CREATE
 	cout << "Finished creating table" << endl;
 
 	delete stmt;
 }	 //서버
+
 
 void signin(sql::mysql::MySQL_Driver* driver, sql::Connection* con, sql::Statement* stmt, sql::PreparedStatement* pstmt) {
 
