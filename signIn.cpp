@@ -15,20 +15,15 @@ string str_member[6] = { "아이디","비밀번호","이름","성별","생년월일","별명" };
 
 
 
-
-
-
-
 void create(sql::mysql::MySQL_Driver* driver, sql::Connection* con, sql::Statement* stmt) {
 	stmt = con->createStatement();
 	stmt->execute("DROP TABLE IF EXISTS user"); // DROP
 	cout << "Finished dropping table (if existed)" << endl;
-	stmt->execute("CREATE TABLE user(id VARCHAR(15) NOT NULL PRIMARY KEY,pw VARCHAR(15) NOT NULL,name VARCHAR(15) ,gender VARCHAR(1) ,birthday DATE,nickname VARCHAR(20));");// CREATE
-	//stmt->execute("CREATE TABLE user (id varchar(10) NOT NULL PRIMARY KEY ,pw varchar(20) NOT NULL,name varchar(10) NOT NULL,gender varchar(1) NOT NULL,birthday date NOT NULL,nickname varchar(10) NOT NULL);");
+	stmt->execute("CREATE TABLE user(id VARCHAR(15) NOT NULL PRIMARY KEY,pw VARCHAR(15) NOT NULL,name VARCHAR(15) NOT NULL,gender VARCHAR(1),birthday DATE NOT NULL,nickname VARCHAR(20) NOT NULL);");// CREATE
 	cout << "Finished creating table" << endl;
 
 	delete stmt;
-}
+}	 //서버
 
 void signin(sql::mysql::MySQL_Driver* driver, sql::Connection* con, sql::Statement* stmt, sql::PreparedStatement* pstmt) {
 

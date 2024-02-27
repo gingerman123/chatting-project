@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
-#include <mysql/jdbc.h>
 #include "signIn.h"
 
+using namespace std;
 
 const string server = "tcp://127.0.0.1:3306"; // 데이터베이스 주소
 const string username = "root"; // 데이터베이스 사용자
@@ -36,7 +36,6 @@ int main()
 	create(driver,con,stmt);
 	pstmt = con->prepareStatement("INSERT INTO user(id,pw,name,gender,birthday,nickname) VALUES(?,?,?,?,?,?)"); // user 테이블 insert
 	signin(driver,con,stmt,pstmt);
-	signin(driver, con, stmt, pstmt);
 
 	return 0;
 
