@@ -82,7 +82,6 @@ namespace Socket_cli {
 			// 서버 주소 설정
 			serverEndPoint = gcnew IPEndPoint(IPAddress::Parse("127.0.0.1"), 7777);
 		}
-
 		void Connect() {
 			while (1) {
 				try {
