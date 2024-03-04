@@ -117,13 +117,14 @@ namespace Project1 {
 			this->button1->Name = L"button1";
 			this->button1->Size = System::Drawing::Size(87, 91);
 			this->button1->TabIndex = 1;
-			this->button1->Text = L"button1";
+			this->button1->Text = L"로그인";
 			this->button1->UseVisualStyleBackColor = true;
 			this->button1->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
 			// 
 			// textBox1
 			// 
 			this->textBox1->Location = System::Drawing::Point(168, 95);
+			this->textBox1->MaxLength = 5;
 			this->textBox1->Name = L"textBox1";
 			this->textBox1->Size = System::Drawing::Size(156, 25);
 			this->textBox1->TabIndex = 2;
@@ -219,19 +220,18 @@ namespace Project1 {
 		array<String^>^ subString = inputString->Split(' ');
 
 		//String^ index_s = subString[0];
-		String^ isTrue = subString[1];
+		String^ isTrue = subString[0];
 		//int index = Int32::Parse(index_s);
-
 		
-		//if (isTrue == "true")
-		//{
-		//this->Invoke(gcnew MethodInvoker(this, &MyForm::MainFormShow));
-		System::Windows::Forms::MessageBox::Show("성공!!", "warning", MessageBoxButtons::OK, MessageBoxIcon::Warning);
-
-		//else
-		//{
-		//	System::Windows::Forms::MessageBox::Show("Check the ID and Password", "warning", MessageBoxButtons::OK, MessageBoxIcon::Warning);
-		//}
+		if (isTrue == "ok")
+		{
+			this->Invoke(gcnew MethodInvoker(this, &MyForm::MainFormShow));
+			//System::Windows::Forms::MessageBox::Show("성공!!", "warning", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+		}
+		else
+		{
+			System::Windows::Forms::MessageBox::Show("Check the ID and Password", "warning", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+		}
 	
 	}
 
