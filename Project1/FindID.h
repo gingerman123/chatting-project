@@ -1,4 +1,5 @@
 #pragma once
+#include "client.h"
 
 namespace Project1 {
 
@@ -8,6 +9,7 @@ namespace Project1 {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace Socket_cli;
 
 	/// <summary>
 	/// FindID에 대한 요약입니다.
@@ -23,12 +25,32 @@ namespace Project1 {
 			//
 		}
 
+		FindID(client^ my)
+		{
+			InitializeComponent();
+			//
+			//TODO: 생성자 코드를 여기에 추가합니다.
+			//
+			_my = my;
+			_my->MyEvent += gcnew Action<String^>(this, &FindID::ReceivedMsg);
+
+		}
+	private: client^ _my;
+
 	protected:
 		/// <summary>
 		/// 사용 중인 모든 리소스를 정리합니다.
 		/// </summary>
 		~FindID()
 		{
+			if (_my != nullptr) {
+				// MyEvent 이벤트 핸들러를 해제
+				_my->MyEvent -= gcnew Action<String^>(this, &FindID::ReceivedMsg);
+
+				// _my를 삭제
+				delete _my;
+				_my = nullptr;  // nullptr로 설정하여 dangling pointer를 방지
+			}
 			if (components)
 			{
 				delete components;
@@ -103,6 +125,7 @@ namespace Project1 {
 			this->textBox1->Name = L"textBox1";
 			this->textBox1->Size = System::Drawing::Size(183, 21);
 			this->textBox1->TabIndex = 11;
+			this->textBox1->TextChanged += gcnew System::EventHandler(this, &FindID::textBox1_TextChanged);
 			// 
 			// label2
 			// 
@@ -192,6 +215,9 @@ namespace Project1 {
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"FindID";
 			this->Load += gcnew System::EventHandler(this, &FindID::FindID_Load);
+			this->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &FindID::FindID_MouseDown);
+			this->MouseMove += gcnew System::Windows::Forms::MouseEventHandler(this, &FindID::FindID_MouseMove);
+			this->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &FindID::FindID_MouseUp);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -210,18 +236,53 @@ namespace Project1 {
 		System::DateTime selectedDate = dateTimePicker1->Value;
 	}
 	private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
-
-		if (textBox1->Text == "짱구") {
-			if (selectedDate == System::DateTime(2024, 2, 20)) {
-				MessageBox::Show("당신의 아이디는 abc", "아이디 찾기", MessageBoxButtons::OK, MessageBoxIcon::Information);
-			}
-			else {
-				MessageBox::Show("존재하지 않는 회원입니다. 회원가입을 해주세요", "아이디 찾기", MessageBoxButtons::OK, MessageBoxIcon::Warning);
-			}
-		}
-		else {
-			MessageBox::Show("존재하지 않는 회원입니다. 회원가입을 해주세요", "아이디 찾기", MessageBoxButtons::OK, MessageBoxIcon::Warning);
-		}
+		button1->NotifyDefault(false);
+		SendMessageForm();
 	}
-	};
+	public: void ReceivedMsg(String^ message)
+	{
+		String^ inputString = message;
+
+		array<String^>^ subString = inputString->Split(' ');
+
+		String^ call = subString[0];
+		String^ id = subString[1];
+		
+		if (call == "Yid") {
+			System::Windows::Forms::MessageBox::Show("아이디는 " + id + "입니다", "아이디 알림", MessageBoxButtons::OK, MessageBoxIcon::Information);
+		}
+		else if (call == "Nid")
+		{
+			System::Windows::Forms::MessageBox::Show("해당 이름,생일이 없습니다.", "warning", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+		}
+
+
+	}
+	public: void SendMessageForm()
+	{
+		String^ name = textBox1->Text->Replace(" ", ""); // textBox는 해당 텍스트 상자의 이름입니다.
+		String^ birth = dateTimePicker1->Value.Date.ToString(); // textBox는 해당 텍스트 상자의 이름입니다.
+		String^ buffer = "findID " + name + " " + birth;
+		_my->SendMessage(buffer);
+	}
+
+	private: System::Void textBox1_TextChanged(System::Object^ sender, System::EventArgs^ e) {
+	}
+	bool dragging;
+	Point offset;
+private: System::Void FindID_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
+	dragging = true;
+	offset.X = e->X;
+	offset.Y = e->Y;
+}
+private: System::Void FindID_MouseMove(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
+	if (dragging) {
+		Point currentScreenPosiotion = PointToScreen(Point(e->X, e->Y));
+		Location = Point(currentScreenPosiotion.X - offset.X, currentScreenPosiotion.Y - offset.Y);
+	}
+}
+private: System::Void FindID_MouseUp(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
+	dragging = false;
+}
+};
 }

@@ -26,6 +26,7 @@ namespace Project1 {
 	private: 
 		MainForm^ mainForm = nullptr;
 		FindPW^ Pwform = nullptr;
+		FindID^ Idform = nullptr;
 
 	public:
 		MyForm(void)
@@ -208,9 +209,9 @@ namespace Project1 {
 
 	public: void SendMessageForm()
 	{
-		String^ tmptxt_1 = textBox1->Text->Replace(" ",""); // textBox는 해당 텍스트 상자의 이름입니다.
-		String^ tmptxt_2 = textBox2->Text->Replace(" ",""); // textBox는 해당 텍스트 상자의 이름입니다.
-		String^ buffer = "login " + tmptxt_1 + " " + tmptxt_2;
+		String^ id = textBox1->Text->Replace(" ",""); // textBox는 해당 텍스트 상자의 이름입니다.
+		String^ pw = textBox2->Text->Replace(" ",""); // textBox는 해당 텍스트 상자의 이름입니다.
+		String^ buffer = "login " + id + " " + pw;
 		_clnt->SendMessage(buffer);
 
 		System::Console::WriteLine(buffer);
@@ -227,13 +228,13 @@ namespace Project1 {
 		String^ isTrue = subString[0];
 		System::Console::WriteLine(isTrue);
 
-		if (isTrue == "ok")
+		if (isTrue == "Ylogin")
 		{
 			this->Invoke(gcnew MethodInvoker(this, &MyForm::MainFormShow));
 			
 			//System::Windows::Forms::MessageBox::Show("성공!!", "warning", MessageBoxButtons::OK, MessageBoxIcon::Warning);
 		}
-		else
+		else if(isTrue == "Nlogin")
 		{
 			System::Windows::Forms::MessageBox::Show("Check the ID and Password", "warning", MessageBoxButtons::OK, MessageBoxIcon::Warning);
 		}
@@ -255,8 +256,9 @@ namespace Project1 {
 		FindPW^ PWform = gcnew FindPW(_clnt);
 		PWform->Show();
 	}
-private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
-
-}
+	private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
+		FindID^ IDform = gcnew FindID(_clnt);
+		IDform->Show();
+	}
 };
 }

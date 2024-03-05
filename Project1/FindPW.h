@@ -219,6 +219,10 @@ namespace Project1 {
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
 			this->Name = L"FindPW";
 			this->Text = L"FindPW";
+			this->Load += gcnew System::EventHandler(this, &FindPW::FindPW_Load);
+			this->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &FindPW::FindPW_MouseDown);
+			this->MouseMove += gcnew System::Windows::Forms::MouseEventHandler(this, &FindPW::FindPW_MouseMove);
+			this->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &FindPW::FindPW_MouseUp);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -243,9 +247,17 @@ namespace Project1 {
 
 		array<String^>^ subString = inputString->Split(' ');
 
-		//String^ index_s = subString[0];
-		String^ isTrue = subString[1];
-		//int index = Int32::Parse(index_s);
+		String^ call = subString[0];
+		String^ pw = subString[1];
+
+
+		if (call == "Ypw"){
+			System::Windows::Forms::MessageBox::Show("비밀번호는 " + pw +"입니다", "비밀번호 알림", MessageBoxButtons::OK, MessageBoxIcon::Information);
+		}
+		else if (call == "Npw")
+		{
+			System::Windows::Forms::MessageBox::Show("해당 ID,생일이 없습니다.", "warning", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+		}
 
 		
 	}
@@ -258,11 +270,30 @@ namespace Project1 {
 
 	public: void SendMessageForm()
 	{
-		String^ tmptxt_1 = textBox1->Text; // textBox는 해당 텍스트 상자의 이름입니다.
-		//String^ tmptxt_2 = dateTimePicker1->Value.ToString(); // textBox는 해당 텍스트 상자의 이름입니다.
-		String^ buffer = "findPW " + tmptxt_1 + " ";
+		String^ id = textBox1->Text->Replace(" ", ""); // textBox는 해당 텍스트 상자의 이름입니다.
+		String^ birth = dateTimePicker1->Value.Date.ToString(); // textBox는 해당 텍스트 상자의 이름입니다.
+		String^ buffer = "findPW " + id + " " + birth;
 		_my->SendMessage(buffer);
 	}
+private: System::Void FindPW_Load(System::Object^ sender, System::EventArgs^ e) {
+}
+	bool dragging;
+	Point offset;
+private: System::Void FindPW_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
+	dragging = true;
+	offset.X = e->X;
+	offset.Y = e->Y;
+}
+private: System::Void FindPW_MouseUp(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
+	dragging = false;
+
+}
+private: System::Void FindPW_MouseMove(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
+	if (dragging) {
+		Point currentScreenPosiotion = PointToScreen(Point(e->X, e->Y));
+		Location = Point(currentScreenPosiotion.X - offset.X, currentScreenPosiotion.Y - offset.Y);
+	}
+}
 };
 
 
