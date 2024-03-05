@@ -3,7 +3,7 @@
 #include "MainForm.h"
 #include "FindID.h"
 #include "FindPW.h"
-
+#include <iostream>
 //using namespace std;
 
 
@@ -124,7 +124,7 @@ namespace Project1 {
 			// textBox1
 			// 
 			this->textBox1->Location = System::Drawing::Point(168, 95);
-			this->textBox1->MaxLength = 5;
+			this->textBox1->MaxLength = 15;
 			this->textBox1->Name = L"textBox1";
 			this->textBox1->Size = System::Drawing::Size(156, 25);
 			this->textBox1->TabIndex = 2;
@@ -132,6 +132,7 @@ namespace Project1 {
 			// textBox2
 			// 
 			this->textBox2->Location = System::Drawing::Point(168, 146);
+			this->textBox2->MaxLength = 15;
 			this->textBox2->Name = L"textBox2";
 			this->textBox2->Size = System::Drawing::Size(156, 25);
 			this->textBox2->TabIndex = 4;
@@ -207,25 +208,29 @@ namespace Project1 {
 
 	public: void SendMessageForm()
 	{
-		String^ tmptxt_1 = textBox1->Text; // textBox는 해당 텍스트 상자의 이름입니다.
-		String^ tmptxt_2 = textBox2->Text; // textBox는 해당 텍스트 상자의 이름입니다.
+		String^ tmptxt_1 = textBox1->Text->Replace(" ",""); // textBox는 해당 텍스트 상자의 이름입니다.
+		String^ tmptxt_2 = textBox2->Text->Replace(" ",""); // textBox는 해당 텍스트 상자의 이름입니다.
 		String^ buffer = "login " + tmptxt_1 + " " + tmptxt_2;
 		_clnt->SendMessage(buffer);
+
+		System::Console::WriteLine(buffer);
+		
+
 	}
 
 	public: void ReceivedMsg(String^ message)
 	{
 		String^ inputString = message;
-
+		System::Console::WriteLine(inputString);
 		array<String^>^ subString = inputString->Split(' ');
 
-		//String^ index_s = subString[0];
 		String^ isTrue = subString[0];
-		//int index = Int32::Parse(index_s);
-		
+		System::Console::WriteLine(isTrue);
+
 		if (isTrue == "ok")
 		{
 			this->Invoke(gcnew MethodInvoker(this, &MyForm::MainFormShow));
+			
 			//System::Windows::Forms::MessageBox::Show("성공!!", "warning", MessageBoxButtons::OK, MessageBoxIcon::Warning);
 		}
 		else

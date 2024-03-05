@@ -260,7 +260,7 @@ namespace Project1 {
 	{
 		String^ tmptxt_1 = textBox1->Text; // textBox는 해당 텍스트 상자의 이름입니다.
 		//String^ tmptxt_2 = dateTimePicker1->Value.ToString(); // textBox는 해당 텍스트 상자의 이름입니다.
-		String^ buffer = "login " + tmptxt_1 + " ";
+		String^ buffer = "findPW " + tmptxt_1 + " ";
 		_my->SendMessage(buffer);
 	}
 };

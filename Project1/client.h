@@ -49,6 +49,7 @@ namespace Socket_cli {
 					int bytesRead = clientSocket->Receive(buffer);
 					//String^ message = Encoding::GetEncoding("UTF-8")->GetString(buffer, 0, bytesRead);
 					String^ message = System::Text::Encoding::UTF8->GetString(buffer, 0, bytesRead);
+					//String^ message = System::Text::Encoding::GetEncoding("EUC-KR")->GetString(buffer, 0, buffer->Length);
 					if (!String::IsNullOrEmpty(message))
 					{
 						Console::WriteLine("Sent message: " + message);
